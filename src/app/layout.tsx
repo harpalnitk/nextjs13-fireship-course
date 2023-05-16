@@ -7,11 +7,20 @@ export const metadata = {
   description: ' A tutorial on nextjs 13 by fireship using pocketbase database',
 }
 
+
+
+
+
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+
+
+
+
   return (
     <html lang="en">
       <body>

@@ -51,3 +51,139 @@ to use add --turbo flag in package.json
 ## Server components
 components are server components by default in nextjs 13 and 
 we can use data fetching directly inside components
+
+
+## Layouts
+
+root layout must have html and body tags
+
+layouts can also do data fecthing
+const data = fetch('');
+
+with paranthesis multiple root layouts
+can also be created in same application
+ e.g.
+ app
+  layout.js
+ (marketing)
+ layout.js
+ (shop)
+ layout.js
+
+ pages under marketing and shop URL's
+ will have their own layouts other than the
+root layout
+
+UI of layout persists across pages
+sometimes we need ui to reload
+ we may then use template.tsx 
+instead of layout.tsx
+
+
+## Rendering startegies
+Nextjs offer
+1. SSR
+2. Static (Prerendering)
+3. ISR (Incremental Static regeneratiom)
+4. Client
+
+By default every page is server component
+
+Thus, useEffect and other hooks can't be used on pages
+therefore, move all interactive code in their own client components
+
+every page has a dynamic option that can be exported
+
+export const dynamic = 'auto'   //default
+
+if we change it to
+
+export const dynamic = 'force-dynamic'  // SSR like getServerSideProps
+
+i.e. it will always use SSR without caching (always fetch latest data)
+
+if we change to 
+
+export const dynamic = 'force-static'  //SSG  getStaticProps
+caches the page indefinitely
+
+if we change to
+
+export const revalidate = 6900 // ISR
+
+# metadata export in all pages
+
+export const metadata = {
+    title='home page',
+    description: 'a home page'
+}
+
+if data is dynamic
+
+export async function generateMetadata ({params}: any){
+    return {
+        title: ''
+    }
+}
+
+### Data Fetching
+
+because every layout page is server component they can access server
+components like environment variables and databases and they can do so
+without the need to pass props like in Nextjs 12
+
+server components can also be async
+
+there is parallel data fetching in all nested server
+components giving efficiency
+
+if same fetch URL is used in multiple components
+nextjs will automatically take care of duplication
+
+nextjs has optimized the fetch API
+
+await fetch('URL', {cache:'force-cache'});   //for static data
+await fetch('URL', {cache:'no-store'});   //for highly dynamic data
+await fetch('URL', {next:{revalidate:420}}); // cache invalidated after 420s
+
+## Streaming
+
+5 steps in rendering a page
+1. Fetch data
+2. Render Server Component (Html on server)
+3. Send HTML to Browser (with css and js)
+4. Render non-interactive page on browser (first paint)
+5. execute javascript (react hydrates the page to make it fully interactive)
+
+All above steps are sequential resulting in page load delays
+
+# Streaming in nextjs works by breaking the application in smaller chunks  to load things progressively
+
+think it as each component as a chink which will go through
+all above 5 steps independently. the framework handles streaming
+automatically but as a developer we can leverage by adding additional components to a route like a loading file.
+
+nextjs will automatically render loading component
+while data is being fetched (no loading state needed)
+
+under the hood react suspense is the magic that makes it possible
+
+suspense is a special component in react that creates a suspense boundary which works by wrapping a component that does something asynchronous like fetch data and then shows fallback UI until that async operation is done
+
+import {Suspense} from 'react';
+
+export default async function Home(){
+    return (
+        <>
+        <Suspense fallback={<p>Loading posts...</p>}>
+        <Posts/>
+        </Suspense>
+        <Suspense fallback={<p>Loading people...</p>}>
+        <People/>
+        </Suspense>
+    )
+}
+
+s
+
+

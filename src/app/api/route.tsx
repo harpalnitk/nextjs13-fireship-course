@@ -2,6 +2,13 @@
 //route file for http requests
 //always run on server
 
+//by default will be executed in nodejs runtime
+// export const runtime = 'nodejs';
+
+//but that can be switched to edge runtime
+// export const runtime = 'edge';
+
+
 import { NextRequest, NextResponse } from "next/server";
 
 //GET,POST,PUT,PATCH,DELETE,HEAD,OPTIONS
